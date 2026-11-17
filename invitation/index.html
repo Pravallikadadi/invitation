@@ -888,39 +888,41 @@ greeting:"✿ ఆనందం, కృతజ్ఞతలతో నిండిన
     if (h1) h1.focus({ preventScroll: true });
   }
 
+  // Open reliably on a tap or an upward swipe. Avoid pointer capture here:
+  // some mobile browsers suppress the synthesized click after capture.
   cover.addEventListener('pointerdown', function (e) {
     if (opened) return;
-    dragging = true; startY = e.clientY; dy = 0; startT = Date.now(); downTarget = e.target;
+    dragging = true;
+    startY = e.clientY;
+    dy = 0;
+    startT = Date.now();
     cover.style.transition = 'none';
-    try { cover.setPointerCapture(e.pointerId); } catch (_) {}
-  });
+  }, { passive: true });
+
   cover.addEventListener('pointermove', function (e) {
-    if (!dragging) return;
+    if (!dragging || opened) return;
     dy = Math.min(0, e.clientY - startY);
-    cover.style.transform = 'translateY(' + dy + 'px)';
-  });
-  function end() {
-    if (!dragging) return;
+    if (Math.abs(dy) > 4) cover.style.transform = 'translateY(' + dy + 'px)';
+  }, { passive: true });
+
+  cover.addEventListener('pointerup', function () {
+    if (opened) return;
+    if (!dragging) { openInvite(); return; }
     dragging = false;
     cover.style.transition = '';
-    var dist = -dy, v = dist / Math.max(1, Date.now() - startT);
-    if (dist > window.innerHeight * 0.2 || (dist > 40 && v > 0.5)) {
-      openInvite();
-    } else {
-      cover.style.transform = '';
-      if (dist < 8) openInvite();
-    }
-  }
-  cover.addEventListener('pointerup', end);
+    // A tap opens immediately; an upward swipe opens once it passes the threshold.
+    var movedUp = -dy;
+    cover.style.transform = '';
+    if (movedUp >= 18 || Date.now() - startT < 1000) openInvite();
+  }, { passive: true });
+
   cover.addEventListener('pointercancel', function () {
-    // A cancelled touch gesture should reset the cover; the click fallback below
-    // still opens it when the browser dispatches a normal tap.
-    if (!dragging) return;
     dragging = false;
     cover.style.transition = '';
     cover.style.transform = '';
-  });
-  // Reliable tap/click fallback for mobile browsers and taps on any part of the cover.
+  }, { passive: true });
+
+  // Keyboard, click, and wheel fallbacks for accessibility and older browsers.
   cover.addEventListener('click', function () { if (!opened) openInvite(); });
   cover.addEventListener('wheel', function (e) { if (e.deltaY > 25) openInvite(); }, { passive: true });
   document.getElementById('swipe').addEventListener('click', function () { if (!opened) openInvite(); });
