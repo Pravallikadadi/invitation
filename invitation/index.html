@@ -819,7 +819,7 @@ greeting:"✿ ఆనందం, కృతజ్ఞతలతో నిండిన
     // English text matches the wording and order supplied for the invitation.
     var liveUrl = 'https://invitation-invitation-two.vercel.app/';
     var englishGreeting = [
-      '\u{1F4D0} *With hearts full of happiness and gratitude,*',
+      '\u{1F490} *With hearts full of happiness and gratitude,*',
       '',
       'We are delighted to invite you and your family to celebrate a beautiful new beginning as *Chandu \u2764\uFE0F Pravallika* get engaged! \u{1F48D}',
       '',
@@ -845,8 +845,9 @@ greeting:"✿ ఆనందం, కృతజ్ఞతలతో నిండిన
   var copyGreeting = document.getElementById('copyGreeting');
   var shareFeedback = document.getElementById('shareFeedback');
   function sendGreeting() {
+    // Use exactly the same canonical string as Copy Greeting; do not rebuild or reformat it here.
     var message = invitationGreeting();
-    window.open('https://wa.me/?text=' + encodeURIComponent(message), '_blank', 'noopener');
+    window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(message), '_blank', 'noopener');
   }
   if (whatsappShare) whatsappShare.addEventListener('click', sendGreeting);
   if (shareGreeting) shareGreeting.addEventListener('click', sendGreeting);
