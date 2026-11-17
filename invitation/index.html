@@ -815,10 +815,30 @@ greeting:"✿ ఆనందం, కృతజ్ఞతలతో నిండిన
   // Both WhatsApp Share and Copy use this one canonical message so every
   // line break, symbol/icon, translated detail, and invitation URL matches.
   function invitationGreeting() {
+    // One canonical message is shared by WhatsApp and Copy Greeting.
+    // English text matches the wording and order supplied for the invitation.
     var liveUrl = 'https://invitation-invitation-two.vercel.app/';
-    if (currentLanguage === 'en') return String(translations.en.greeting);
-    var linkLabel = '♥ ఆహ్వాన లింక్: ';
-    return String(translations.te.greeting) + '\n\n' + linkLabel + liveUrl;
+    var englishGreeting = [
+      '💐 *With hearts full of happiness and gratitude,*',
+      '',
+      'We are delighted to invite you and your family to celebrate a beautiful new beginning as *Chandu ❤️ Pravallika* get engaged! 💍',
+      '',
+      'Your presence, love, and blessings would make this special occasion even more memorable. We would be honoured to have you share in our joy and bless the couple as they begin this wonderful journey together.',
+      '',
+      '📅 *Date:* Sunday, 22 November 2026',
+      '🕘 *Time:* 9:15 AM',
+      '📍 *Venue:* Spandana Function Hall, Tuni, Andhra Pradesh',
+      '',
+      '❤️ Your presence is our greatest gift. We eagerly look forward to celebrating this precious moment with you and your family!',
+      '',
+      '💌 *View the invitation:*',
+      liveUrl
+    ].join('\n');
+    if (currentLanguage === 'en') return englishGreeting;
+    var teluguGreeting = translations && translations.te && translations.te.greeting
+      ? String(translations.te.greeting)
+      : '';
+    return teluguGreeting + '\n\n♥ ఆహ్వాన లింక్: ' + liveUrl;
   }
   var whatsappShare = document.getElementById('whatsappShare');
   var shareGreeting = document.getElementById('shareGreeting');
