@@ -73,7 +73,7 @@ h1,h2,h3,p,dl,dd,ul{margin:0}
 .cover{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;
   padding-top:calc(max(120px,15vh) + env(safe-area-inset-top,0px));padding-bottom:calc(max(150px,19vh) + env(safe-area-inset-bottom,0px));
   padding-left:max(44px,calc(env(safe-area-inset-left,0px) + 28px));padding-right:max(44px,calc(env(safe-area-inset-right,0px) + 28px));
-  touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer;transition:transform .85s cubic-bezier(.7,0,.2,1);will-change:transform}
+  touch-action:manipulation;user-select:none;-webkit-user-select:none;cursor:pointer;transition:transform .85s cubic-bezier(.7,0,.2,1);will-change:transform}
 .cover:active{cursor:grabbing}
 .cover.open{transform:translateY(-105%)}
 .c-top{display:grid;gap:.7rem;justify-items:center}
@@ -888,44 +888,31 @@ greeting:"✿ ఆనందం, కృతజ్ఞతలతో నిండిన
     if (h1) h1.focus({ preventScroll: true });
   }
 
-  // Open reliably on a tap or an upward swipe. Avoid pointer capture here:
-  // some mobile browsers suppress the synthesized click after capture.
-  cover.addEventListener('pointerdown', function (e) {
+  // Reliable cover activation: listen at document capture phase so taps on
+  // nested artwork/text are handled consistently on mobile browsers.
+  var touchStartY = null;
+  cover.addEventListener('touchstart', function (e) {
+    if (opened || !e.touches || !e.touches.length) return;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  cover.addEventListener('touchend', function (e) {
     if (opened) return;
-    dragging = true;
-    startY = e.clientY;
-    dy = 0;
-    startT = Date.now();
-    cover.style.transition = 'none';
+    var endY = (e.changedTouches && e.changedTouches.length) ? e.changedTouches[0].clientY : null;
+    // A tap always opens; an upward swipe also opens.
+    if (touchStartY === null || endY === null || touchStartY - endY > 12 || Math.abs(touchStartY - endY) <= 12) {
+      openInvite();
+    }
+    touchStartY = null;
   }, { passive: true });
-
-  cover.addEventListener('pointermove', function (e) {
-    if (!dragging || opened) return;
-    dy = Math.min(0, e.clientY - startY);
-    if (Math.abs(dy) > 4) cover.style.transform = 'translateY(' + dy + 'px)';
-  }, { passive: true });
-
-  cover.addEventListener('pointerup', function () {
-    if (opened) return;
-    if (!dragging) { openInvite(); return; }
-    dragging = false;
-    cover.style.transition = '';
-    // A tap opens immediately; an upward swipe opens once it passes the threshold.
-    var movedUp = -dy;
-    cover.style.transform = '';
-    if (movedUp >= 18 || Date.now() - startT < 1000) openInvite();
-  }, { passive: true });
-
-  cover.addEventListener('pointercancel', function () {
-    dragging = false;
-    cover.style.transition = '';
-    cover.style.transform = '';
-  }, { passive: true });
-
-  // Keyboard, click, and wheel fallbacks for accessibility and older browsers.
-  cover.addEventListener('click', function () { if (!opened) openInvite(); });
+  document.addEventListener('click', function (e) {
+    if (!opened && cover && cover.contains(e.target)) openInvite();
+  }, true);
   cover.addEventListener('wheel', function (e) { if (e.deltaY > 25) openInvite(); }, { passive: true });
-  document.getElementById('swipe').addEventListener('click', function () { if (!opened) openInvite(); });
+  var swipeButton = document.getElementById('swipe');
+  if (swipeButton) swipeButton.addEventListener('click', function (e) {
+    e.preventDefault();
+    if (!opened) openInvite();
+  });
   document.addEventListener('keydown', function (e) { if (!opened && (e.key === 'ArrowUp' || e.key === 'Enter' || e.key === ' ')) openInvite(); });
 })();
 </script>
