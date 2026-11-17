@@ -331,6 +331,7 @@ h1,h2,h3,p,dl,dd,ul{margin:0}
   .hero h1 { font-size: clamp(2.7rem, 7.5vh, 4.5rem); }
   .hero .rule { margin: .65rem auto; }
 }
+  .calendar-icon{width:1.05em;height:1.05em;vertical-align:-.16em;display:inline-block;flex:none}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -383,7 +384,7 @@ h1,h2,h3,p,dl,dd,ul{margin:0}
 
       <div class="scratch-wrap">
         <div class="scratch" id="scratch">
-          <div class="reveal" aria-live="polite"><i data-i18n="sunday">Sunday</i><em>22 November 2026</em><b>9:15 AM</b></div>
+          <div class="reveal" aria-live="polite"><i data-i18n="sunday">Sunday</i><em data-i18n="scratchDate">22 November 2026</em><b data-i18n="scratchTime">9:15 AM</b></div>
           <canvas id="scr" aria-label="Scratch card: scratch to reveal the date and time"></canvas>
         </div>
         <p class="label" id="hint" data-i18n="scratchHint">Scratch to reveal the date &amp; time</p>
@@ -476,7 +477,7 @@ h1,h2,h3,p,dl,dd,ul{margin:0}
         <div class="share-actions">
           <button class="btn share-primary" type="button" id="whatsappShare">✦ <span data-i18n="whatsapp">Send on WhatsApp</span></button>
           <button class="btn ghost" type="button" id="copyGreeting">▢ <span data-i18n="copyGreeting">Copy greeting</span></button>
-          <button class="btn ghost" type="button" id="saveDate">♡ <span data-i18n="saveDate">Save the date</span></button>
+          <button class="btn ghost" type="button" id="saveDate"><svg class="calendar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.5" y="5" width="17" height="15.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M7.5 3.5v3M16.5 3.5v3M3.8 9h16.4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg> <span data-i18n="saveDate">Save the date</span></button>
         </div>
         <p class="share-feedback" id="shareFeedback" role="status" aria-live="polite"></p>
       </div>
@@ -510,7 +511,7 @@ h1,h2,h3,p,dl,dd,ul{margin:0}
     if (diff <= 0) {
       cd.textContent = ch.textContent = cm.textContent = cs.textContent = '00';
       var lead = document.querySelector('[data-lead]');
-      if (lead) lead.textContent = 'The celebration has begun';
+      if (lead) lead.textContent = translations[currentLanguage].celebrationBegun;
       return;
     }
     var s = Math.floor(diff / 1000);
@@ -642,6 +643,7 @@ h1,h2,h3,p,dl,dd,ul{margin:0}
 
 
   /* scratch card: reveals date & time, auto-clears once ~27% is scratched */
+  var scratchCopy = { en: { title: 'SCRATCH HERE', subtitle: 'to reveal the date & time' }, te: { title: 'ఇక్కడ స్క్రాచ్ చేయండి', subtitle: 'తేదీ మరియు సమయం చూడండి' } };
   (function () {
     var cv = document.getElementById('scr'), box = document.getElementById('scratch'), hint = document.getElementById('hint');
     if (!cv || !box) return;
@@ -667,9 +669,9 @@ h1,h2,h3,p,dl,dd,ul{margin:0}
       ctx.strokeRect(8 * dpr, 8 * dpr, W - 16 * dpr, H - 16 * dpr);
       ctx.fillStyle = '#5a3d0e'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.font = '400 ' + (H * .2) + 'px Marcellus, Georgia, serif';
-      ctx.fillText('SCRATCH HERE', W / 2, H * .42);
+      ctx.fillText(scratchCopy[currentLanguage].title, W / 2, H * .42);
       ctx.font = '400 ' + (H * .12) + 'px Marcellus, Georgia, serif';
-      ctx.fillText('to reveal the date & time', W / 2, H * .66);
+      ctx.fillText(scratchCopy[currentLanguage].subtitle, W / 2, H * .66);
       total = Math.ceil(W / 4) * Math.ceil(H / 4);
     }
 
@@ -685,7 +687,7 @@ h1,h2,h3,p,dl,dd,ul{margin:0}
       if (done) return;
       done = true; drawing = false;
       cv.classList.add('done');
-      if (hint) hint.textContent = 'We look forward to seeing you';
+      if (hint) hint.textContent = translations[currentLanguage].scratchComplete;
     }
 
     function pos(e) {
@@ -720,6 +722,7 @@ h1,h2,h3,p,dl,dd,ul{margin:0}
     cv.addEventListener('pointerup', up);
     cv.addEventListener('pointercancel', up);
 
+    document.addEventListener('invitation-language-change', function () { if (!done && !moves) foil(); });
     foil();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { if (!done && !moves) foil(); });
     window.addEventListener('resize', function () { if (!done && !moves) foil(); });
@@ -731,7 +734,7 @@ h1,h2,h3,p,dl,dd,ul{margin:0}
     en: {
       coverTitle:"Engagement Invitation", tapOpen:"Tap anywhere to open",
       inviteLine:"Together with their families, invite you to the engagement of", and:"and",
-      sunday:"Sunday", scratchHint:"Scratch to reveal the date & time",
+      sunday:"Sunday", scratchDate:"22 November 2026", scratchTime:"9:15 AM", scratchHint:"Scratch to reveal the date & time", scratchComplete:"We look forward to seeing you", celebrationBegun:"The celebration has begun",
       countTitle:"Counting down to the engagement", days:"Days", hours:"Hours", minutes:"Minutes", seconds:"Seconds",
       families:"Our families", groomFamily:"Groom’s family", brideFamily:"Bride’s family",
       groomName:"Chandu", brideName:"Pravallika",
@@ -745,13 +748,13 @@ h1,h2,h3,p,dl,dd,ul{margin:0}
       footerCompliments:"With best compliments from family, relatives and friends.", thankYou:"Thank You",
       shareGreeting:"Send greeting", shareCaption:"Share the joy with your loved ones",
       whatsapp:"Send on WhatsApp", copyGreeting:"Copy greeting", saveDate:"Save the date",
-      greeting:"💐 With hearts full of happiness and gratitude, we warmly invite you and your family to celebrate the engagement of Chandu ❤️ Pravallika! 💍\n\nYour presence and blessings will make this joyful beginning even more special. Please join us as we celebrate their love and the start of a beautiful journey together.\n\n📅 Date: Sunday, 22 November 2026\n🕘 Time: 9:15 AM\n📍 Venue: Spandana Function Hall, Tuni, Andhra Pradesh\n\n❤️ Your presence is the greatest gift. We look forward to celebrating this memorable day with you!",
-      copied:"Greeting copied. Paste it into your message.", calendar:"Engagement date added to your calendar file."
+      greeting:"💐 *With hearts full of happiness and gratitude,*\n\nWe are delighted to invite you and your family to celebrate a beautiful new beginning as *Chandu ❤️ Pravallika* get engaged! 💍\n\nYour presence, love, and blessings would make this special occasion even more memorable. We would be honoured to have you share in our joy and bless the couple as they begin this wonderful journey together.\n\n📅 *Date:* Sunday, 22 November 2026\n🕘 *Time:* 9:15 AM\n📍 *Venue:* Spandana Function Hall, Tuni, Andhra Pradesh\n\n❤️ Your presence is our greatest gift. We eagerly look forward to celebrating this precious moment with you and your family!\n\n💌 *View the invitation:*\nhttps://invitation-invitation-two.vercel.app/",
+      copied:"Greeting copied. Paste it into your message.", calendar:"Calendar event opened. Tap Save to add it to your calendar.", copyPrompt:"Copy your invitation greeting:"
     },
     te: {
       coverTitle:"నిశ్చితార్థ ఆహ్వానం", tapOpen:"ఆహ్వాన పత్రికను తెరవడానికి తాకండి",
       inviteLine:"తమ కుటుంబ సభ్యులతో కలిసి మా నిశ్చితార్థ వేడుకకు మిమ్మల్ని ఆహ్వానిస్తున్నాము", and:"మరియు",
-      sunday:"ఆదివారం", scratchHint:"తేదీ మరియు సమయం తెలుసుకోవడానికి స్క్రాచ్ చేయండి",
+      sunday:"ఆదివారం", scratchDate:"22 నవంబర్ 2026", scratchTime:"ఉదయం 9:15", scratchHint:"తేదీ మరియు సమయం తెలుసుకోవడానికి స్క్రాచ్ చేయండి", scratchComplete:"మిమ్మల్ని కలుసుకోవడానికి ఎదురుచూస్తున్నాము", celebrationBegun:"వేడుక ప్రారంభమైంది",
       countTitle:"నిశ్చితార్థ వేడుకకు మిగిలిన సమయం", days:"రోజులు", hours:"గంటలు", minutes:"నిమిషాలు", seconds:"సెకన్లు",
       families:"మా కుటుంబాలు", groomFamily:"వరుని కుటుంబం", brideFamily:"వధువు కుటుంబం",
       groomName:"చందు", brideName:"ప్రవల్లిక",
@@ -765,8 +768,8 @@ h1,h2,h3,p,dl,dd,ul{margin:0}
       footerCompliments:"కుటుంబ సభ్యులు, బంధువులు మరియు స్నేహితుల శుభాకాంక్షలతో.", thankYou:"ధన్యవాదాలు",
       shareGreeting:"శుభాకాంక్షల సందేశం పంపండి", shareCaption:"ఈ ఆనందాన్ని మీ ఆత్మీయులతో పంచుకోండి",
       whatsapp:"వాట్సాప్‌లో పంపండి", copyGreeting:"సందేశాన్ని కాపీ చేయండి", saveDate:"తేదీని సేవ్ చేయండి",
-greeting:"💐 ఆనందం, కృతజ్ఞతలతో నిండిన హృదయాలతో చందు ❤️ ప్రవల్లిక నిశ్చితార్థ వేడుకకు మిమ్మల్ని మరియు మీ కుటుంబ సభ్యులను సాదరంగా ఆహ్వానిస్తున్నాము! 💍\n\nవారి ప్రేమకు, కొత్త జీవిత ప్రయాణానికి శ్రీకారం చుట్టే ఈ శుభ సందర్భంలో మీ రాక, ఆశీస్సులు మా ఆనందాన్ని మరింత పెంచుతాయి. మా సంతోషాన్ని మీతో పంచుకోవాలని ఎదురుచూస్తున్నాము.\n\n📅 తేదీ: 22 నవంబర్ 2026, ఆదివారం\n🕘 సమయం: ఉదయం 9:15 గంటలకు\n📍 వేదిక: స్పందన ఫంక్షన్ హాల్, తుని, ఆంధ్రప్రదేశ్\n\n❤️ మీ రాకే మాకు ఎంతో విలువైన కానుక. ఈ మధురమైన రోజును మీతో కలిసి జరుపుకోవాలని ఆశిస్తున్నాము!",
-      copied:"సందేశం కాపీ అయింది. ఇప్పుడు మీ మెసేజ్‌లో పేస్ట్ చేయండి.", calendar:"నిశ్చితార్థ తేదీ క్యాలెండర్ ఫైల్‌గా సేవ్ అయింది."
+greeting:"✿ ఆనందం, కృతజ్ఞతలతో నిండిన హృదయాలతో చందు ♥ ప్రవల్లిక నిశ్చితార్థ వేడుకకు మిమ్మల్ని మరియు మీ కుటుంబ సభ్యులను సాదరంగా ఆహ్వానిస్తున్నాము!\n\nవారి ప్రేమకు, కొత్త జీవిత ప్రయాణానికి శ్రీకారం చుట్టే ఈ శుభ సందర్భంలో మీ రాక, ఆశీస్సులు మా ఆనందాన్ని మరింత పెంచుతాయి. మా సంతోషాన్ని మీతో పంచుకోవాలని ఎదురుచూస్తున్నాము.\n\n▦ తేదీ: 22 నవంబర్ 2026, ఆదివారం\n◷ సమయం: ఉదయం 9:15 గంటలకు\n⌖ వేదిక: స్పందన ఫంక్షన్ హాల్, తుని, ఆంధ్రప్రదేశ్\n\n♥ మీ రాకే మాకు ఎంతో విలువైన కానుక. ఈ మధురమైన రోజును మీతో కలిసి జరుపుకోవాలని ఆశిస్తున్నాము!",
+      copied:"సందేశం కాపీ అయింది. ఇప్పుడు మీ మెసేజ్‌లో పేస్ట్ చేయండి.", calendar:"క్యాలెండర్ ఈవెంట్ తెరుచుకుంది. మీ క్యాలెండర్‌లో చేర్చడానికి Save నొక్కండి.", copyPrompt:"మీ ఆహ్వాన సందేశాన్ని కాపీ చేయండి:"
     }
   };
   var currentLanguage = 'en';
@@ -792,15 +795,21 @@ greeting:"💐 ఆనందం, కృతజ్ఞతలతో నిండి�
     if (langEN) { langEN.classList.toggle('active', lang === 'en'); langEN.setAttribute('aria-pressed', lang === 'en' ? 'true' : 'false'); }
     if (langTE) { langTE.classList.toggle('active', lang === 'te'); langTE.setAttribute('aria-pressed', lang === 'te' ? 'true' : 'false'); }
     var hint = document.getElementById('hint');
-    if (hint && !document.getElementById('scr').classList.contains('done')) hint.textContent = translations[lang].scratchHint;
+    if (hint) hint.textContent = document.getElementById('scr').classList.contains('done') ? translations[lang].scratchComplete : translations[lang].scratchHint;
+    var scratchCanvas = document.getElementById('scr');
+    if (scratchCanvas) scratchCanvas.setAttribute('aria-label', lang === 'te' ? 'తేదీ మరియు సమయాన్ని చూడటానికి స్క్రాచ్ చేయండి' : 'Scratch card: scratch to reveal the date and time');
+    document.dispatchEvent(new Event('invitation-language-change'));
   }
   if (langEN) langEN.addEventListener('click', function() { setLanguage('en'); });
   if (langTE) langTE.addEventListener('click', function() { setLanguage('te'); });
 
+  // Both WhatsApp Share and Copy use this one canonical message so every
+  // line break, symbol/icon, translated detail, and invitation URL matches.
   function invitationGreeting() {
     var liveUrl = 'https://invitation-invitation-two.vercel.app/';
-    var linkLabel = currentLanguage === 'te' ? '❤️ ఆహ్వాన లింక్: ' : '❤️ Invitation link: ';
-    return translations[currentLanguage].greeting + '\n\n' + linkLabel + liveUrl;
+    if (currentLanguage === 'en') return String(translations.en.greeting);
+    var linkLabel = '♥ ఆహ్వాన లింక్: ';
+    return String(translations.te.greeting) + '\n\n' + linkLabel + liveUrl;
   }
   var whatsappShare = document.getElementById('whatsappShare');
   var shareGreeting = document.getElementById('shareGreeting');
@@ -808,46 +817,31 @@ greeting:"💐 ఆనందం, కృతజ్ఞతలతో నిండి�
   var shareFeedback = document.getElementById('shareFeedback');
   function sendGreeting() {
     var message = invitationGreeting();
-    if (!message) {
-      alert(currentLanguage === 'te' ? 'ఆహ్వానాన్ని ముందుగా వెబ్‌సైట్‌లో హోస్ట్ చేయండి. ఆ తర్వాత WhatsApp ద్వారా పంపితే అసలు లింక్ కూడా సందేశంలో చేరుతుంది.' : 'Please host this invitation online first. Then WhatsApp sharing will automatically include its live link.');
-      return;
-    }
     window.open('https://wa.me/?text=' + encodeURIComponent(message), '_blank', 'noopener');
   }
   if (whatsappShare) whatsappShare.addEventListener('click', sendGreeting);
   if (shareGreeting) shareGreeting.addEventListener('click', sendGreeting);
   if (copyGreeting) copyGreeting.addEventListener('click', function() {
     var message = invitationGreeting();
-    if (!message) {
-      alert(currentLanguage === 'te' ? 'లింక్‌తో సందేశాన్ని కాపీ చేయడానికి ముందుగా ఆహ్వానాన్ని వెబ్‌సైట్‌లో హోస్ట్ చేయండి.' : 'Host the invitation online first to copy a greeting with its live link.');
-      return;
-    }
+    function fallbackCopy() { window.prompt(translations[currentLanguage].copyPrompt, message); }
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(message).then(function() {
-        shareFeedback.textContent = translations[currentLanguage].copied;
-      }).catch(function() { window.prompt('Copy your invitation greeting:', message); });
-    } else { window.prompt('Copy your invitation greeting:', message); }
+        if (shareFeedback) shareFeedback.textContent = translations[currentLanguage].copied;
+      }).catch(fallbackCopy);
+    } else { fallbackCopy(); }
   });
 
-  /* Download an add-to-calendar file */
+  /* Open a pre-filled calendar event; the guest chooses Save in Google Calendar. */
   var saveDate = document.getElementById('saveDate');
   if (saveDate) saveDate.addEventListener('click', function() {
-    var ics = [
-      'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Chandu and Pravallika//Engagement//EN',
-      'CALSCALE:GREGORIAN','BEGIN:VEVENT','UID:chandu-pravallika-engagement-20261122@example.local',
-      'DTSTAMP:' + new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'') ,'DTSTART;TZID=Asia/Kolkata:20261122T091500',
-      'DTEND;TZID=Asia/Kolkata:20261122T110000',
-      'SUMMARY:Chandu and Pravallika Engagement',
-      'LOCATION:Spandana Function Hall\\, Tuni\\, Andhra Pradesh',
-      'DESCRIPTION:Celebrate the engagement of Chandu and Pravallika.',
-      'END:VEVENT','END:VCALENDAR'
-    ].join('\r\n');
-    var blob = new Blob([ics], {type:'text/calendar;charset=utf-8'});
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a'); a.href = url; a.download = 'Chandu-Pravallika-Engagement.ics';
-    a.style.display = 'none'; document.body.appendChild(a); a.click(); a.remove();
-    window.setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
-    shareFeedback.textContent = translations[currentLanguage].calendar;
+    var calendarUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+      + '&text=' + encodeURIComponent('Chandu and Pravallika Engagement')
+      + '&dates=20261122T091500/20261122T110000'
+      + '&ctz=' + encodeURIComponent('Asia/Kolkata')
+      + '&location=' + encodeURIComponent('Spandana Function Hall, Tuni, Andhra Pradesh')
+      + '&details=' + encodeURIComponent('Celebrate the engagement of Chandu and Pravallika.');
+    window.open(calendarUrl, '_blank', 'noopener');
+    if (shareFeedback) shareFeedback.textContent = translations[currentLanguage].calendar;
   });
 
   /* Soft falling flower petals */
