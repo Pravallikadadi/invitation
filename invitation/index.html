@@ -501,9 +501,10 @@ h1,h2,h3,p,dl,dd,ul{margin:0}
   var html = document.documentElement;
   var cover = document.getElementById('cover');
   var musicBtn = document.getElementById('music');
+  // Set the language before the scratch-card canvas is first painted.
+  var currentLanguage = 'en';
 
-  html.classList.add('lock');
-  setTimeout(function(){ setLanguage('en'); }, 0); 
+  html.classList.add('lock'); 
 
   /* countdown */
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
@@ -672,9 +673,10 @@ h1,h2,h3,p,dl,dd,ul{margin:0}
       ctx.strokeRect(8 * dpr, 8 * dpr, W - 16 * dpr, H - 16 * dpr);
       ctx.fillStyle = '#5a3d0e'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.font = '400 ' + (H * .2) + 'px Marcellus, Georgia, serif';
-      ctx.fillText(scratchCopy[currentLanguage].title, W / 2, H * .42);
+      var copy = scratchCopy[currentLanguage] || scratchCopy.en;
+      ctx.fillText(copy.title, W / 2, H * .42);
       ctx.font = '400 ' + (H * .12) + 'px Marcellus, Georgia, serif';
-      ctx.fillText(scratchCopy[currentLanguage].subtitle, W / 2, H * .66);
+      ctx.fillText(copy.subtitle, W / 2, H * .66);
       total = Math.ceil(W / 4) * Math.ceil(H / 4);
     }
 
@@ -690,7 +692,7 @@ h1,h2,h3,p,dl,dd,ul{margin:0}
       if (done) return;
       done = true; drawing = false;
       cv.classList.add('done');
-      if (hint) hint.textContent = translations[currentLanguage].scratchComplete;
+      if (hint) hint.textContent = (translations && translations[currentLanguage] ? translations[currentLanguage] : translations.en).scratchComplete;
     }
 
     function pos(e) {
@@ -775,22 +777,23 @@ greeting:"✿ ఆనందం, కృతజ్ఞతలతో నిండిన
       copied:"సందేశం కాపీ అయింది. ఇప్పుడు మీ మెసేజ్‌లో పేస్ట్ చేయండి.", calendar:"క్యాలెండర్ ఈవెంట్ తెరుచుకుంది. మీ క్యాలెండర్‌లో చేర్చడానికి Save నొక్కండి.", copyPrompt:"మీ ఆహ్వాన సందేశాన్ని కాపీ చేయండి:"
     }
   };
-  var currentLanguage = 'en';
   var langEN = document.getElementById('langEN');
   var langTE = document.getElementById('langTE');
   function setLanguage(lang) {
+    lang = lang === 'te' ? 'te' : 'en';
     currentLanguage = lang;
+    var dictionary = (translations && translations[lang]) ? translations[lang] : (translations && translations.en ? translations.en : {});
     document.documentElement.lang = lang === 'te' ? 'te' : 'en';
     document.querySelectorAll('[data-i18n]').forEach(function(el) {
       var key = el.getAttribute('data-i18n');
-      if (translations[lang][key]) {
-        var value = translations[lang][key];
+      if (Object.prototype.hasOwnProperty.call(dictionary, key)) {
+        var value = dictionary[key];
         if (key === 'groomParents' || key === 'brideParents') {
           var names = value.split('♥');
           el.replaceChildren();
           var father = document.createElement('span'); father.className = 'parent-name'; father.textContent = names[0].trim();
           var heart = document.createElement('span'); heart.className = 'parent-heart'; heart.setAttribute('aria-label', 'with'); heart.textContent = '♥';
-          var mother = document.createElement('span'); mother.className = 'parent-name'; mother.textContent = names[1].trim();
+          var mother = document.createElement('span'); mother.className = 'parent-name'; mother.textContent = names[1] ? names[1].trim() : '';
           el.append(father, heart, mother);
         } else el.textContent = value;
       }
@@ -798,13 +801,16 @@ greeting:"✿ ఆనందం, కృతజ్ఞతలతో నిండిన
     if (langEN) { langEN.classList.toggle('active', lang === 'en'); langEN.setAttribute('aria-pressed', lang === 'en' ? 'true' : 'false'); }
     if (langTE) { langTE.classList.toggle('active', lang === 'te'); langTE.setAttribute('aria-pressed', lang === 'te' ? 'true' : 'false'); }
     var hint = document.getElementById('hint');
-    if (hint) hint.textContent = document.getElementById('scr').classList.contains('done') ? translations[lang].scratchComplete : translations[lang].scratchHint;
-    var scratchCanvas = document.getElementById('scr');
-    if (scratchCanvas) scratchCanvas.setAttribute('aria-label', lang === 'te' ? 'తేదీ మరియు సమయాన్ని చూడటానికి స్క్రాచ్ చేయండి' : 'Scratch card: scratch to reveal the date and time');
+    var scr = document.getElementById('scr');
+    if (hint && dictionary.scratchComplete && dictionary.scratchHint) {
+      hint.textContent = scr && scr.classList.contains('done') ? dictionary.scratchComplete : dictionary.scratchHint;
+    }
+    if (scr) scr.setAttribute('aria-label', lang === 'te' ? 'తేదీ మరియు సమయాన్ని చూడటానికి స్క్రాచ్ చేయండి' : 'Scratch card: scratch to reveal the date and time');
     document.dispatchEvent(new Event('invitation-language-change'));
   }
   if (langEN) langEN.addEventListener('click', function() { setLanguage('en'); });
   if (langTE) langTE.addEventListener('click', function() { setLanguage('te'); });
+  setLanguage('en');
 
   // Both WhatsApp Share and Copy use this one canonical message so every
   // line break, symbol/icon, translated detail, and invitation URL matches.
