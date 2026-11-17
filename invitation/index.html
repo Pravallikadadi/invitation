@@ -912,9 +912,18 @@ greeting:"✿ ఆనందం, కృతజ్ఞతలతో నిండిన
     }
   }
   cover.addEventListener('pointerup', end);
-  cover.addEventListener('pointercancel', end);
+  cover.addEventListener('pointercancel', function () {
+    // A cancelled touch gesture should reset the cover; the click fallback below
+    // still opens it when the browser dispatches a normal tap.
+    if (!dragging) return;
+    dragging = false;
+    cover.style.transition = '';
+    cover.style.transform = '';
+  });
+  // Reliable tap/click fallback for mobile browsers and taps on any part of the cover.
+  cover.addEventListener('click', function () { if (!opened) openInvite(); });
   cover.addEventListener('wheel', function (e) { if (e.deltaY > 25) openInvite(); }, { passive: true });
-  document.getElementById('swipe').addEventListener('click', function (e) { if (e.detail === 0) openInvite(); });
+  document.getElementById('swipe').addEventListener('click', function () { if (!opened) openInvite(); });
   document.addEventListener('keydown', function (e) { if (!opened && (e.key === 'ArrowUp' || e.key === 'Enter' || e.key === ' ')) openInvite(); });
 })();
 </script>
