@@ -819,19 +819,19 @@ greeting:"✿ ఆనందం, కృతజ్ఞతలతో నిండిన
     // English text matches the wording and order supplied for the invitation.
     var liveUrl = 'https://invitation-invitation-two.vercel.app/';
     var englishGreeting = [
-      '💐 *With hearts full of happiness and gratitude,*',
+      '\u{1F4D0} *With hearts full of happiness and gratitude,*',
       '',
-      'We are delighted to invite you and your family to celebrate a beautiful new beginning as *Chandu ❤️ Pravallika* get engaged! 💍',
+      'We are delighted to invite you and your family to celebrate a beautiful new beginning as *Chandu \u2764\uFE0F Pravallika* get engaged! \u{1F48D}',
       '',
       'Your presence, love, and blessings would make this special occasion even more memorable. We would be honoured to have you share in our joy and bless the couple as they begin this wonderful journey together.',
       '',
-      '📅 *Date:* Sunday, 22 November 2026',
-      '🕘 *Time:* 9:15 AM',
-      '📍 *Venue:* Spandana Function Hall, Tuni, Andhra Pradesh',
+      '\u{1F4C5} *Date:* Sunday, 22 November 2026',
+      '\u{1F558} *Time:* 9:15 AM',
+      '\u{1F4CD} *Venue:* Spandana Function Hall, Tuni, Andhra Pradesh',
       '',
-      '❤️ Your presence is our greatest gift. We eagerly look forward to celebrating this precious moment with you and your family!',
+      '\u2764\uFE0F Your presence is our greatest gift. We eagerly look forward to celebrating this precious moment with you and your family!',
       '',
-      '💌 *View the invitation:*',
+      '\u{1F48C} *View the invitation:*',
       liveUrl
     ].join('\n');
     if (currentLanguage === 'en') return englishGreeting;
@@ -852,7 +852,22 @@ greeting:"✿ ఆనందం, కృతజ్ఞతలతో నిండిన
   if (shareGreeting) shareGreeting.addEventListener('click', sendGreeting);
   if (copyGreeting) copyGreeting.addEventListener('click', function() {
     var message = invitationGreeting();
-    function fallbackCopy() { window.prompt(translations[currentLanguage].copyPrompt, message); }
+    function fallbackCopy() {
+      var field = document.createElement('textarea');
+      field.value = message;
+      field.setAttribute('readonly', '');
+      field.style.position = 'fixed';
+      field.style.opacity = '0';
+      document.body.appendChild(field);
+      field.select();
+      var copied = false;
+      try { copied = document.execCommand('copy'); } catch (e) { copied = false; }
+      document.body.removeChild(field);
+      if (shareFeedback) shareFeedback.textContent = copied
+        ? translations[currentLanguage].copied
+        : translations[currentLanguage].copyPrompt;
+      if (!copied) window.prompt(translations[currentLanguage].copyPrompt, message);
+    }
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(message).then(function() {
         if (shareFeedback) shareFeedback.textContent = translations[currentLanguage].copied;
