@@ -348,7 +348,10 @@ h1,h2,h3,p,dl,dd,ul{margin:0}
 </svg>
 
 <!-- Swipe-up cover -->
-<div class="cover paper" id="cover" aria-label="Engagement invitation cover. Tap anywhere or swipe up to open.">
+<div class="cover paper" id="cover"
+     aria-label="Engagement invitation cover. Tap anywhere or swipe up to open."
+     onclick="if(window.openEngagementInvitation){window.openEngagementInvitation();}else{this.classList.add('open');document.documentElement.classList.remove('lock');document.documentElement.classList.add('opened');document.body.classList.add('opened');setTimeout(()=>{this.hidden=true;},1000);}"
+     ontouchend="if(!window.openEngagementInvitation){this.classList.add('open');document.documentElement.classList.remove('lock');document.documentElement.classList.add('opened');document.body.classList.add('opened');setTimeout(()=>{this.hidden=true;},1000);}">
   <div class="c-top">
     <p class="te" lang="te">శ్రీరస్తు &nbsp;శుభమస్తు &nbsp;అవిఘ్నమస్తు</p>
     <p class="label" data-i18n="coverTitle">Engagement Invitation</p>
@@ -887,6 +890,8 @@ greeting:"✿ ఆనందం, కృతజ్ఞతలతో నిండిన
     var h1 = document.getElementById('top');
     if (h1) h1.focus({ preventScroll: true });
   }
+  // Expose the opener for the cover's inline fallback handler.
+  window.openEngagementInvitation = openInvite;
 
   // Reliable cover activation: listen at document capture phase so taps on
   // nested artwork/text are handled consistently on mobile browsers.
