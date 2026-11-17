@@ -745,7 +745,7 @@ h1,h2,h3,p,dl,dd,ul{margin:0}
       footerCompliments:"With best compliments from family, relatives and friends.", thankYou:"Thank You",
       shareGreeting:"Send greeting", shareCaption:"Share the joy with your loved ones",
       whatsapp:"Send on WhatsApp", copyGreeting:"Copy greeting", saveDate:"Save the date",
-      greeting:"With immense joy, we invite you to celebrate the engagement of Chandu ❤️ Pravallika!\n\n❤️ 22 November 2026 (Sunday)\n❤️ 9:15 AM\n❤️ Spandana Function Hall, Tuni, Andhra Pradesh\n\nYour presence and blessings will make our special day even more memorable. We look forward to celebrating with you! ❤️",
+      greeting:"💐 With hearts full of happiness and gratitude, we warmly invite you and your family to celebrate the engagement of Chandu ❤️ Pravallika! 💍\n\nYour presence and blessings will make this joyful beginning even more special. Please join us as we celebrate their love and the start of a beautiful journey together.\n\n📅 Date: Sunday, 22 November 2026\n🕘 Time: 9:15 AM\n📍 Venue: Spandana Function Hall, Tuni, Andhra Pradesh\n\n❤️ Your presence is the greatest gift. We look forward to celebrating this memorable day with you!",
       copied:"Greeting copied. Paste it into your message.", calendar:"Engagement date added to your calendar file."
     },
     te: {
@@ -765,7 +765,7 @@ h1,h2,h3,p,dl,dd,ul{margin:0}
       footerCompliments:"కుటుంబ సభ్యులు, బంధువులు మరియు స్నేహితుల శుభాకాంక్షలతో.", thankYou:"ధన్యవాదాలు",
       shareGreeting:"శుభాకాంక్షల సందేశం పంపండి", shareCaption:"ఈ ఆనందాన్ని మీ ఆత్మీయులతో పంచుకోండి",
       whatsapp:"వాట్సాప్‌లో పంపండి", copyGreeting:"సందేశాన్ని కాపీ చేయండి", saveDate:"తేదీని సేవ్ చేయండి",
-      greeting:"చందు ❤️ ప్రవల్లిక నిశ్చితార్థ వేడుకకు మిమ్మల్ని సాదరంగా ఆహ్వానిస్తున్నాము!\n\n❤️ 22 నవంబర్ 2026, ఆదివారం\n❤️ ఉదయం 9:15 గంటలకు\n❤️ స్పందన ఫంక్షన్ హాల్, తుని, ఆంధ్రప్రదేశ్\n\nమీ రాక మరియు ఆశీస్సులు మా వేడుకను మరింత ప్రత్యేకంగా మారుస్తాయి. మీ కోసం ఎదురుచూస్తుంటాము! ❤️",
+greeting:"💐 ఆనందం, కృతజ్ఞతలతో నిండిన హృదయాలతో చందు ❤️ ప్రవల్లిక నిశ్చితార్థ వేడుకకు మిమ్మల్ని మరియు మీ కుటుంబ సభ్యులను సాదరంగా ఆహ్వానిస్తున్నాము! 💍\n\nవారి ప్రేమకు, కొత్త జీవిత ప్రయాణానికి శ్రీకారం చుట్టే ఈ శుభ సందర్భంలో మీ రాక, ఆశీస్సులు మా ఆనందాన్ని మరింత పెంచుతాయి. మా సంతోషాన్ని మీతో పంచుకోవాలని ఎదురుచూస్తున్నాము.\n\n📅 తేదీ: 22 నవంబర్ 2026, ఆదివారం\n🕘 సమయం: ఉదయం 9:15 గంటలకు\n📍 వేదిక: స్పందన ఫంక్షన్ హాల్, తుని, ఆంధ్రప్రదేశ్\n\n❤️ మీ రాకే మాకు ఎంతో విలువైన కానుక. ఈ మధురమైన రోజును మీతో కలిసి జరుపుకోవాలని ఆశిస్తున్నాము!",
       copied:"సందేశం కాపీ అయింది. ఇప్పుడు మీ మెసేజ్‌లో పేస్ట్ చేయండి.", calendar:"నిశ్చితార్థ తేదీ క్యాలెండర్ ఫైల్‌గా సేవ్ అయింది."
     }
   };
@@ -798,8 +798,7 @@ h1,h2,h3,p,dl,dd,ul{margin:0}
   if (langTE) langTE.addEventListener('click', function() { setLanguage('te'); });
 
   function invitationGreeting() {
-    if (!/^https?:$/.test(window.location.protocol)) return null;
-    var liveUrl = window.location.href.split('#')[0];
+    var liveUrl = 'https://invitation-invitation-two.vercel.app/';
     var linkLabel = currentLanguage === 'te' ? '❤️ ఆహ్వాన లింక్: ' : '❤️ Invitation link: ';
     return translations[currentLanguage].greeting + '\n\n' + linkLabel + liveUrl;
   }
